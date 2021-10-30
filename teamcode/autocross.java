@@ -25,16 +25,16 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 @Autonomous
 public class auto extends LinearOpMode {
 
-    private DistanceSensor sensorRange; // Distance sensor identification
+    private DistanceSensor sensorRange;
     private DistanceSensor sensorRange2;
     private DistanceSensor sensorRange3;
 
-    BNO055IMU imu; // Define API
+    BNO055IMU imu;
     BNO055IMU.Parameters parameters;
     Orientation lastAngles = new Orientation();
     double globalAngle;
 
-    public void imuinit() { // RESET GYRO AND SENSORS
+    public void imuinit() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         parameters = new BNO055IMU.Parameters();
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -116,13 +116,13 @@ public class auto extends LinearOpMode {
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        imuinit(); // START
+        imuinit();
         waitForStart();
         while (opModeIsActive()) {
-            //stopper.setPosition(1);
-            /* while (sensorRange3.getDistance(DistanceUnit.INCH)<12) { //back // BACK SENSOR
-                double power = 0.3; // power variable
-                telemetry.addData("angle", getAngle()); // data
+            stopper.setPosition(1);
+            while (sensorRange3.getDistance(DistanceUnit.INCH)<12) { //back
+                double power = 0.3;
+                telemetry.addData("angle", getAngle());
                 telemetry.update();
                 if (getAngle() < -1){ //turn left
                     tl.setPower(-(power - (0.01 * getAngle())));
@@ -182,9 +182,7 @@ public class auto extends LinearOpMode {
                     bl.setPower(-power);
                     br.setPower(power);
                 }
-            } */ 
-            // ACTUAL CODE: 
-            /*
+            }
             block.stop();
             arm.setPower(-0.5);
             sleep(500);
@@ -201,26 +199,173 @@ public class auto extends LinearOpMode {
 
             block.backward(0.5);
             sleep(1200);
-            */
 
-            while (sensorRange.getDistance(DistantUnit.INCH)>0.5) {
-                double power = 0.3;
-                telemetry.addData("Automated movement into the loading zone has started...");
-                tl.setPower(-(power - (0.01 * getAngle())));
-                tr.setPower((power + (0.01 * getAngle())));
-                bl.setPower(-(power - (0.01 * getAngle())));
-                br.setPower((power + (0.01 * getAngle())));
-            }
-            while (sensorRange2.getDistance(DistanceUnit.INCH)>0.5) {
-                tl.setPower(-(power - (0.01 * getAngle())));
-                tr.setPower((power + (0.01 * getAngle())));
-                bl.setPower(-(power - (0.01 * getAngle())));
-                br.setPower((power + (0.01 * getAngle())));
-            }
-            sleep(300);
             stop();
 
 
+        }
+    }
+}
+@Autonomous
+public class auto extends LinearOpMode {
+  public class auto extends LinearOpMode
+  public classs auto extends linearOpMode
+    private DistanceSensor
+    private DistanceSensor sensorRange;
+    private DistanceSensor sensorRange2;
+    private DistanceSensor sensorRange3;
+
+    BNO055IMU imu;
+    BNO055IMU.Parameters parameters;
+    Orientation lastAngles = new Orientation();
+    double globalAngle;
+    double globalAngle;
+    public void imuinit() {
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+        imu.initialize(parameters);
+
+        telemetry.addData("Gyro Mode", "calibrating...");
+
+        telemetry.update();
+
+        telemetry update();
+        while (!isStopRequested() && !imu.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("Gyro Mode", "ready");
+
+        telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+
+        telemetry.update();
+
+    }
+
+    private void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = 0;
+    }
+
+    private double getAngle() {
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+    
+    public void autonomous() throws InterruptedException {
+        DcMotor tl = hardwareMap.get(DcMotor.class, "tl");
+        DcMotor tr = hardwareMap.get(DcMotor.class, "tr");
+        DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
+        DcMotor br = hardwareMap.get(DcMotor.class, "br");
+        DcMotor intake = hardwareMap.get(DcMotor.class,"intake");
+        DcMotor transfer = hardwareMap.get(DcMotor.class, "transfer");
+        motorblock block = new motorblock(tl, tr, bl, br);
+        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+        sensorRange2 = hardwareMap.get(DistanceSensor.class, "sensor_range2");
+        sensorRange3 = hardwareMap.get(DistanceSensor.class, "sensor_range3");
+
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorRange;
+        Rev2mDistanceSensor sensorTimeOfFlight2 = (Rev2mDistanceSensor) sensorRange2;
+        Rev2mDistanceSensor sensorTimeOfFlight3 = (Rev2mDistanceSensor) sensorRange3;
+
+        tl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        tr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        
+
+
+        waitForStart();
+        while (opModeIsActive()) {
+            stopper.setPosition(1);
+            while (sensorRange3.getDistance(DistanceUnit.INCH)<12) { //back
+                double power = 0.3;
+                telemetry.addData("angle", getAngle());
+                telemetry.update();
+                if (getAngle() < -1){ //turn left
+                    tl.setPower(-(power - (0.01 * getAngle())));
+                    tr.setPower((power + (0.01 * getAngle())));
+                    bl.setPower(-(power - (0.01 * getAngle())));
+                    br.setPower((power + (0.01 * getAngle())));
+                } else if (getAngle() > 1){ //turn right
+                    tl.setPower(-(power - (0.01 * getAngle())));
+                    tr.setPower((power + (0.01 * getAngle())));
+                    bl.setPower(-(power - (0.01 * getAngle())));
+                    br.setPower((power + (0.01 * getAngle())));
+                } else {
+                    tl.setPower(-power);
+                    tr.setPower(power);
+                    bl.setPower(-power);
+                    br.setPower(power);
+                }
+            }
+            while (sensorRange2.getDistance(DistanceUnit.INCH)<60){ //right
+                double power = 0.4;
+                telemetry.addData("angle", getAngle());
+                telemetry.update();
+                if (getAngle() < -1){ //turn left
+                    tl.setPower((power + (0.01 * getAngle())));
+                    tr.setPower((power + (0.01 * getAngle())));
+                    bl.setPower(-(power - (0.01 * getAngle())));
+                    br.setPower(-(power - (0.01 * getAngle())));
+                } else if (getAngle() > 1){ //turn right
+                    tl.setPower((power + (0.01 * getAngle())));
+                    tr.setPower((power + (0.01 * getAngle())));
+                    bl.setPower(-(power - (0.01 * getAngle())));
+                    br.setPower(-(power - (0.01 * getAngle())));
+                } else {
+                    tl.setPower(power);
+                    tr.setPower(power);
+                    bl.setPower(-power);
+                    br.setPower(-power);
+                }
+            }
+            
+            while (sensorRange3.getDistance(DistanceUnit.INCH)<48) { //back
+                double power = 0.3;
+                telemetry.addData("angle", getAngle());
+                telemetry.update();
+                if (getAngle() < -1){ //turn left
+                    tl.setPower(-(power - (0.01 * getAngle())));
+                    tr.setPower((power + (0.01 * getAngle())));
+                    bl.setPower(-(power - (0.01 * getAngle())));
+                    br.setPower((power + (0.01 * getAngle())));
+                } else if (getAngle() > 1){ //turn right
+                    tl.setPower(-(power - (0.01 * getAngle())));
+                    tr.setPower((power + (0.01 * getAngle())));
+                    bl.setPower(-(power - (0.01 * getAngle())));
+                    br.setPower((power + (0.01 * getAngle())));
+                } else {
+                    tl.setPower(-power);
+                    tr.setPower(power);
+                    bl.setPower(-power);
+                    br.setPower(power);
+                }
+            }
+            block.stop();
+            block.stop();
+            stop();
+
+          
         }
     }
 }
