@@ -211,6 +211,12 @@ public class auto extends LinearOpMode {
                 bl.setPower(-(power - (0.01 * getAngle())));
                 br.setPower((power + (0.01 * getAngle())));
             }
+            while (sensorRange2.getDistance(DistanceUnit.INCH)>0.5) {
+                tl.setPower(-(power - (0.01 * getAngle())));
+                tr.setPower((power + (0.01 * getAngle())));
+                bl.setPower(-(power - (0.01 * getAngle())));
+                br.setPower((power + (0.01 * getAngle())));
+            }
             sleep(300);
             stop();
 
